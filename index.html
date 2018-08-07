@@ -210,6 +210,12 @@
       }));
     }
 
+    function toggleTodoHandler(e) {
+      const li = e.target;
+
+      store.dispatch(toggleTodoAction(li.data.id));
+    }
+
     document.getElementById('todoBtn').addEventListener('click', addTodo);
     document.getElementById('goalBtn').addEventListener('click', addGoal);
 
@@ -217,7 +223,12 @@
       const node = document.createElement('li');
       const text = document.createTextNode(todo.name);
 
+      node.data = todo;
+      node.style.cursor = 'pointer';
+      node.style.textDecoration = todo.complete ? 'line-through' : null;
       node.appendChild(text);
+      node.addEventListener('click', toggleTodoHandler);
+
       document.getElementById('todos').appendChild(node);
     }
 
@@ -225,6 +236,7 @@
       const node = document.createElement('li');
       const text = document.createTextNode(goal.name);
 
+      node.data = goal;
       node.appendChild(text);
       document.getElementById('goals').appendChild(node);
     }
