@@ -1,5 +1,5 @@
 /* global API */
-(function() {
+(function () {
     window.API = {};
 
     function fail() {
@@ -40,23 +40,23 @@
         },
     ];
 
-    API.fetchGoals = function() {
+    API.fetchGoals = function () {
         return new Promise((res, rej) => {
-            setTimeout(function() {
+            setTimeout(function () {
                 res(goals);
             }, 2000);
         });
     };
 
-    API.fetchTodos = function() {
+    API.fetchTodos = function () {
         return new Promise((res, rej) => {
-            setTimeout(function() {
+            setTimeout(function () {
                 res(todos);
             }, 2000);
         });
     };
 
-    API.saveTodo = function(name) {
+    API.saveTodo = function (name) {
         return new Promise((res, rej) => {
             setTimeout(() => {
                 const todo = {
@@ -70,7 +70,7 @@
         });
     };
 
-    API.saveGoal = function(name) {
+    API.saveGoal = function (name) {
         return new Promise((res, rej) => {
             setTimeout(() => {
                 const goal = {
@@ -83,7 +83,7 @@
         });
     };
 
-    API.deleteGoal = function(id) {
+    API.deleteGoal = function (id) {
         return new Promise((res, rej) => {
             setTimeout(() => {
                 goals = goals.filter(goal => goal.id !== id);
@@ -92,7 +92,7 @@
         });
     };
 
-    API.deleteTodo = function(id) {
+    API.deleteTodo = function (id) {
         return new Promise((res, rej) => {
             setTimeout(() => {
                 todos = todos.filter(todo => todo.id !== id);
@@ -101,7 +101,7 @@
         });
     };
 
-    API.saveTodoToggle = function(id) {
+    API.saveTodoToggle = function (id) {
         return new Promise((res, rej) => {
             setTimeout(() => {
                 todos = todos.map(
