@@ -231,11 +231,10 @@
     }
 
     class Todos extends React.Component {
-      addItem = e => {
-        e.preventDefault();
+      addItem = (value, cb) => {
         this.props.store.dispatch(handleAddTodo(
-          this.input.value,
-          () => this.input.value = ''
+          value,
+          cb
         ));
       }
 
@@ -248,18 +247,16 @@
       }
 
       render() {
-        return (
-          <div>
-            <h1>Todo List</h1>
-            <input
-              type="text"
-              placeholder="Add Todo"
-              ref = {input => this.input = input}
-            />
-            <button onClick={this.addItem}>Add Todo</button>
+        const {todos} = this.props;
 
-            <List items={this.props.todos} remove={this.removeItem} toggle={this.toggleItem}/>
-          </div>
+        return (
+          <ListGroup
+            heading="Todo List"
+            actionLabel="Add Todo"
+            items={todos}
+            addItem={this.addItem}
+            removeItem={this.removeItem}
+            toggleItem={this.toggleItem} />
         );
       }
     }
@@ -295,7 +292,7 @@
       }
 
       render() {
-        const {heading, actionLabel, items, addItem, removeItem} = this.props;
+        const {heading, actionLabel, items, addItem, removeItem, toggleItem} = this.props;
 
         return (
           <div>
@@ -307,7 +304,7 @@
             />
             <button onClick={this.addItem}>{actionLabel}</button>
 
-            <List items={items} remove={removeItem}/>
+            <List items={items} remove={removeItem} toggle={toggleItem} />
           </div>
         );
       }
