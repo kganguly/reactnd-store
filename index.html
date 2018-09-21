@@ -230,66 +230,22 @@
       );
     }
 
-    class Todos extends React.Component {
-      addItem = (value, cb) => {
-        this.props.store.dispatch(handleAddTodo(
-          value,
-          cb
-        ));
-      }
-
-      removeItem = todo => {
-        this.props.store.dispatch(handleDeleteTodo(todo));
-      }
-
-      toggleItem = id => {
-        this.props.store.dispatch(handleToggleTodo(id));
-      }
-
-      render() {
-        const {todos} = this.props;
-
-        return (
-          <ListGroup
-            heading="Todo List"
-            actionLabel="Add Todo"
-            items={todos}
-            addItem={this.addItem}
-            removeItem={this.removeItem}
-            toggleItem={this.toggleItem} />
-        );
-      }
-    }
-
-    class Goals extends React.Component {
-      addItem = (value, cb) => {
-        this.props.store.dispatch(handleAddGoal(
-          value,
-          cb
-        ));
-      }
-
-      removeItem = goal => {
-        this.props.store.dispatch(handleDeleteGoal(goal));
-      }
-
-      render() {
-        const {goals} = this.props;
-
-        return (
-          <ListGroup heading="Goals" actionLabel="Add Goal" items={goals} addItem={this.addItem} removeItem={this.removeItem} />
-        );
-      }
-    }
-
     class ListGroup extends React.Component {
       addItem = e => {
         e.preventDefault();
-        this.props.addItem(
-          this.input.value,
-          () => this.input.value = ''
+        this.props.store.dispatch(
+          this.props.addItem(
+            this.input.value,
+            () => this.input.value = ''
+          )
         );
-      }
+      };
+
+      removeItem = item => {
+        this.props.store.dispatch(this.props.removeItem(item));
+      };
+
+      toggleItem = id => this.props.store.dispatch(this.props.toggleItem(id));
 
       render() {
         const {heading, actionLabel, items, addItem, removeItem, toggleItem} = this.props;
@@ -299,13 +255,64 @@
             <h1>{heading}</h1>
             <input
               type="text"
-              placeholder={'"'+actionLabel+'"'}
+              placeholder={`"${actionLabel}"`}
               ref = {input => this.input = input}
             />
             <button onClick={this.addItem}>{actionLabel}</button>
 
-            <List items={items} remove={removeItem} toggle={toggleItem} />
+            <List items={items} remove={this.removeItem} toggle={this.toggleItem} />
           </div>
+        );
+      }
+    }
+
+    class Todos extends React.Component {
+      addItem = handleAddTodo;
+
+      removeItem = handleDeleteTodo;
+
+      toggleItem = handleToggleTodo;
+
+      render() {
+        const {todos} = this.props;
+
+        return (
+          <Context.Consumer>
+            {store => (
+              <ListGroup
+                heading="Todo List"
+                actionLabel="Add Todo"
+                items={todos}
+                addItem={this.addItem}
+                removeItem={this.removeItem}
+                toggleItem={this.toggleItem}
+                store={store} />
+            )}
+          </Context.Consumer>
+        );
+      }
+    }
+
+    class Goals extends React.Component {
+      addItem = handleAddGoal;
+
+      removeItem = handleDeleteGoal;
+
+      render() {
+        const {goals} = this.props;
+
+        return (
+          <Context.Consumer>
+            {store => (
+              <ListGroup
+                heading="Goals"
+                actionLabel="Add Goal"
+                items={goals}
+                addItem={this.addItem}
+                removeItem={this.removeItem}
+                store={store}/>
+            )}
+          </Context.Consumer>
         );
       }
     }
@@ -328,8 +335,8 @@
 
         return (
           <div>
-            <Todos todos={todos} store={this.props.store}/>
-            <Goals goals={goals} store={this.props.store}/>
+            <Todos todos={todos}/>
+            <Goals goals={goals}/>
           </div>
         );
       }
