@@ -265,11 +265,10 @@
     }
 
     class Goals extends React.Component {
-      addItem = e => {
-        e.preventDefault();
+      addItem = (value, cb) => {
         this.props.store.dispatch(handleAddGoal(
-          this.input.value,
-          () => this.input.value = ''
+          value,
+          cb
         ));
       }
 
@@ -278,17 +277,37 @@
       }
 
       render() {
+        const {goals} = this.props;
+
+        return (
+          <ListGroup heading="Goals" actionLabel="Add Goal" items={goals} addItem={this.addItem} removeItem={this.removeItem} />
+        );
+      }
+    }
+
+    class ListGroup extends React.Component {
+      addItem = e => {
+        e.preventDefault();
+        this.props.addItem(
+          this.input.value,
+          () => this.input.value = ''
+        );
+      }
+
+      render() {
+        const {heading, actionLabel, items, addItem, removeItem} = this.props;
+
         return (
           <div>
-            <h1>Goals</h1>
+            <h1>{heading}</h1>
             <input
               type="text"
-              placeholder="Add Goal"
+              placeholder={'"'+actionLabel+'"'}
               ref = {input => this.input = input}
             />
-            <button onClick={this.addItem}>Add Goal</button>
+            <button onClick={this.addItem}>{actionLabel}</button>
 
-            <List items={this.props.goals} remove={this.removeItem}/>
+            <List items={items} remove={removeItem}/>
           </div>
         );
       }
