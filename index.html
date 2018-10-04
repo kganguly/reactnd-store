@@ -233,7 +233,7 @@
     class ListGroup extends React.Component {
       addItem = e => {
         e.preventDefault();
-        this.props.store.dispatch(
+        this.props.dispatch(
           this.props.addItem(
             this.input.value,
             () => this.input.value = ''
@@ -242,10 +242,10 @@
       };
 
       removeItem = item => {
-        this.props.store.dispatch(this.props.removeItem(item));
+        this.props.dispatch(this.props.removeItem(item));
       };
 
-      toggleItem = id => this.props.store.dispatch(this.props.toggleItem(id));
+      toggleItem = id => this.props.dispatch(this.props.toggleItem(id));
 
       render() {
         const {heading, actionLabel, items, addItem, removeItem, toggleItem} = this.props;
@@ -286,7 +286,7 @@
                 addItem={this.addItem}
                 removeItem={this.removeItem}
                 toggleItem={this.toggleItem}
-                store={store} />
+                dispatch={store.dispatch} />
             )}
           </Context.Consumer>
         );
@@ -310,7 +310,7 @@
                 items={goals}
                 addItem={this.addItem}
                 removeItem={this.removeItem}
-                store={store}/>
+                dispatch={store.dispatch}/>
             )}
           </Context.Consumer>
         );
