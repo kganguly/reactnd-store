@@ -274,21 +274,17 @@
       toggleItem = handleToggleTodo;
 
       render() {
-        const {todos} = this.props;
+        const {dispatch, todos} = this.props;
 
         return (
-          <Context.Consumer>
-            {store => (
-              <ListGroup
-                heading="Todo List"
-                actionLabel="Add Todo"
-                items={todos}
-                addItem={this.addItem}
-                removeItem={this.removeItem}
-                toggleItem={this.toggleItem}
-                dispatch={store.dispatch} />
-            )}
-          </Context.Consumer>
+          <ListGroup
+            dispatch={dispatch}
+            heading="Todo List"
+            actionLabel="Add Todo"
+            items={todos}
+            addItem={this.addItem}
+            removeItem={this.removeItem}
+            toggleItem={this.toggleItem} />
         );
       }
     }
@@ -299,26 +295,23 @@
       removeItem = handleDeleteGoal;
 
       render() {
-        const {goals} = this.props;
+        const {dispatch, goals} = this.props;
 
         return (
-          <Context.Consumer>
-            {store => (
-              <ListGroup
-                heading="Goals"
-                actionLabel="Add Goal"
-                items={goals}
-                addItem={this.addItem}
-                removeItem={this.removeItem}
-                dispatch={store.dispatch}/>
-            )}
-          </Context.Consumer>
+          <ListGroup
+            dispatch={dispatch}
+            heading="Goals"
+            actionLabel="Add Goal"
+            items={goals}
+            addItem={this.addItem}
+            removeItem={this.removeItem}
+            />
         );
       }
     }
 
     function App(props) {
-      const { todos, goals, loading } = props;
+      const { dispatch, todos, goals, loading } = props;
 
       if (loading === true) {
         return <h3>Loading</h3>
@@ -326,8 +319,8 @@
 
       return (
         <div>
-          <Todos todos={todos}/>
-          <Goals goals={goals}/>
+          <Todos dispatch={dispatch} todos={todos}/>
+          <Goals dispatch={dispatch} goals={goals}/>
         </div>
       );
     }
@@ -340,9 +333,10 @@
         store.subscribe(() => this.forceUpdate());
       }
 
-      renderChildren(todos, goals, loading) {
+      renderChildren(dispatch, todos, goals, loading) {
         return React.Children.map(this.props.children, child => {
           return React.cloneElement(child, {
+            dispatch,
             todos,
             goals,
             loading,
@@ -352,9 +346,10 @@
 
       render() {
         const { store } = this.props;
+        const dispatch = store.dispatch;
         const { todos, goals, loading } = store.getState();
 
-        return this.renderChildren(todos, goals, loading);
+        return this.renderChildren(dispatch, todos, goals, loading);
       }
     }
 
