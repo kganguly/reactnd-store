@@ -317,7 +317,22 @@
       }
     }
 
-    class App extends React.Component {
+    function App(props) {
+      const { todos, goals, loading } = props;
+
+      if (loading === true) {
+        return <h3>Loading</h3>
+      }
+
+      return (
+        <div>
+          <Todos todos={todos}/>
+          <Goals goals={goals}/>
+        </div>
+      );
+    }
+
+    class Loader extends React.Component {
       componentDidMount() {
         const { store } = this.props;
 
@@ -329,29 +344,20 @@
         const { store } = this.props;
         const { todos, goals, loading } = store.getState();
 
-        if (loading === true) {
-          return <h3>Loading</h3>
-        }
-
         return (
-          <div>
-            <Todos todos={todos}/>
-            <Goals goals={goals}/>
-          </div>
+          <App todos={todos} goals={goals} loading={loading} />
         );
       }
     }
 
-    class ConnectedApp extends React.Component {
-      render() {
-        return (
-          <Context.Consumer>
-            {store => (
-              <App store={store} />
-            )}
-          </Context.Consumer>
-        );
-      }
+    function ConnectedApp(props) {
+      return (
+        <Context.Consumer>
+          {store => (
+              <Loader store={store} />
+          )}
+        </Context.Consumer>
+      );
     }
 
     const Context = React.createContext();
