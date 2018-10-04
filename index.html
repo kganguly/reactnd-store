@@ -340,13 +340,21 @@
         store.subscribe(() => this.forceUpdate());
       }
 
+      renderChildren(todos, goals, loading) {
+        return React.Children.map(this.props.children, child => {
+          return React.cloneElement(child, {
+            todos,
+            goals,
+            loading,
+          })
+        });
+      }
+
       render() {
         const { store } = this.props;
         const { todos, goals, loading } = store.getState();
 
-        return (
-          <App todos={todos} goals={goals} loading={loading} />
-        );
+        return this.renderChildren(todos, goals, loading);
       }
     }
 
@@ -354,7 +362,9 @@
       return (
         <Context.Consumer>
           {store => (
-              <Loader store={store} />
+              <Loader store={store}>
+                <App />
+              </Loader>
           )}
         </Context.Consumer>
       );
