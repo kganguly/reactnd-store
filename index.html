@@ -9,6 +9,7 @@
   <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
   <script src="https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js"></script>
+  <script src="https://unpkg.com/react-redux@5.0.6/dist/react-redux.min.js"></script>
 </head>
 
 <body>
@@ -234,23 +235,7 @@
       );
     }
 
-    class ListGroup extends React.Component {
-      addItem = e => {
-        e.preventDefault();
-        this.props.dispatch(
-          this.props.addItem(
-            this.input.value,
-            () => this.input.value = ''
-          )
-        );
-      };
-
-      removeItem = item => {
-        this.props.dispatch(this.props.removeItem(item));
-      };
-
-      toggleItem = id => this.props.dispatch(this.props.toggleItem(id));
-
+    function ListGroup extends React.Component {
       render() {
         const {heading, actionLabel, items, addItem, removeItem, toggleItem} = this.props;
 
@@ -262,27 +247,31 @@
               placeholder={`"${actionLabel}"`}
               ref = {input => this.input = input}
             />
-            <button onClick={this.addItem}>{actionLabel}</button>
+            <button
+              onClick={() => {
+                addItem(this.input.value, () => this.input.value = '')
+              }}>
+              {actionLabel}
+            </button>
 
-            <List items={items} remove={this.removeItem} toggle={this.toggleItem} />
+            <List items={items} remove={removeItem} toggle={toggleItem} />
           </div>
         );
       }
     }
 
     class Todos extends React.Component {
-      addItem = handleAddTodo;
+      addItem = (name, cb) => this.props.dispatch(handleAddTodo(name, cb));
 
-      removeItem = handleDeleteTodo;
+      removeItem = item => this.props.dispatch(handleDeleteTodo(item));
 
-      toggleItem = handleToggleTodo;
+      toggleItem = id => this.props.dispatch(handleToggleTodo(id));
 
       render() {
-        const {dispatch, todos} = this.props;
+        const {todos} = this.props;
 
         return (
           <ListGroup
-            dispatch={dispatch}
             heading="Todo List"
             actionLabel="Add Todo"
             items={todos}
@@ -293,17 +282,20 @@
       }
     }
 
-    class Goals extends React.Component {
-      addItem = handleAddGoal;
+    const ConnectedTodos = connect(state => {
+      todos: state.todos,
+    })(Todos);
 
-      removeItem = handleDeleteGoal;
+    class Goals extends React.Component {
+      addItem = (name,cb) => this.props.dispatch(handleAddGoal(name, cb));
+
+      removeItem = item => this.props.dispatch(handleDeleteGoal(item));
 
       render() {
-        const {dispatch, goals} = this.props;
+        const {goals} = this.props;
 
         return (
           <ListGroup
-            dispatch={dispatch}
             heading="Goals"
             actionLabel="Add Goal"
             items={goals}
@@ -314,8 +306,12 @@
       }
     }
 
-    function App(props) {
-      const { dispatch, todos, goals, loading } = props;
+    const ConnectedGoals = connect(state => {
+      goals: state.goals,
+    })(Goals);
+
+    function AppView(props) {
+      const { loading } = props;
 
       if (loading === true) {
         return <h3>Loading</h3>
@@ -323,51 +319,31 @@
 
       return (
         <div>
-          <Todos dispatch={dispatch} todos={todos}/>
-          <Goals dispatch={dispatch} goals={goals}/>
+          <ConnectedTodos />
+          <ConnectedGoals />
         </div>
       );
     }
 
-    class Loader extends React.Component {
+    class App extends React.Component {
       componentDidMount() {
-        const { store } = this.props;
+        const { dispatch } = this.props;
 
-        store.dispatch(handleInitialData());
-        store.subscribe(() => this.forceUpdate());
-      }
-
-      renderChildren(dispatch, todos, goals, loading) {
-        return React.Children.map(this.props.children, child => {
-          return React.cloneElement(child, {
-            dispatch,
-            todos,
-            goals,
-            loading,
-          })
-        });
+        dispatch(handleInitialData());
       }
 
       render() {
-        const { store } = this.props;
-        const dispatch = store.dispatch;
-        const { todos, goals, loading } = store.getState();
+        const { loading } = this.props;
 
-        return this.renderChildren(dispatch, todos, goals, loading);
+        return (
+          <AppView loading={loading} />
+        );
       }
     }
 
-    function ConnectedApp(props) {
-      return (
-        <Context.Consumer>
-          {store => (
-              <Loader store={store}>
-                <App />
-              </Loader>
-          )}
-        </Context.Consumer>
-      );
-    }
+    const ConnectedApp = connect((state) => ({
+      loading: state.loading,
+    }))(App);
 
     const Context = React.createContext();
 
